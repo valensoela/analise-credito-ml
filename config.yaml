@@ -1,0 +1,44 @@
+data:
+  raw_path: "data/raw/dados.csv"
+  processed_path: "data/processed/dados_processed.csv"
+  test_size: 0.2
+  random_state: 42
+
+features:
+  target: "not.fully.paid"
+  categorical:
+    - "purpose"
+  drop_columns:
+    - "not.fully.paid"
+    - "purpose"
+
+models:
+  decision_tree:
+    random_state: 42
+    class_weight: "balanced"
+
+  random_forest:
+    random_state: 42
+    class_weight: "balanced"
+    n_estimators: 300
+    max_depth: 10
+
+  xgboost:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+    threshold: 0.4
+
+mlflow:
+  experiment_name: "loan-default-prediction"
+  tracking_uri: "http://localhost:5000"
+  model_registry_name: "LoanDefaultBestModel"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  model_path: "models/best_model.joblib"
+  preprocessor_path: "models/preprocessor.joblib"

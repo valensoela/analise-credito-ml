@@ -205,3 +205,31 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ── Projeto: Loan Default Predictor ───────────────────────────────────────
+
+# Modelos treinados — arquivos grandes, não vão para o GitHub
+models/*.joblib
+models/*.pkl
+
+# Dados — nunca sobe dados brutos para repositório público
+data/raw/*.csv
+data/processed/*.csv
+
+# MLflow — gerado localmente ao treinar
+mlruns/
+mlflow.db
+mlartifacts/
+
+# Relatórios gerados durante o treinamento
+reports/figures/*.png
+reports/figures/*.jpg
+
+# Relatórios de teste
+reports/test_report.html
+htmlcov/
+
+# Cache do pytest e cobertura
+.pytest_cache/
+.coverage
+coverage.xml
