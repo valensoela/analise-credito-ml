@@ -15,18 +15,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Install UV
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: "3.11"
-          cache: "pip"
+          enable-cache: true
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: uv sync --frozen
 
       - name: Run tests with coverage
         run: |
-          pytest tests/ \
+          uv run pytest tests/ \
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml \
@@ -45,16 +47,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Install UV
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: "3.11"
+          enable-cache: true
 
-      - name: Install lint tools
-        run: pip install ruff
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --frozen
 
       - name: Run ruff linter
-        run: ruff check src/ api/ app/ tests/
+        run: uv run ruff check src/ api/ app/ tests/
 
   docker:
     name: Build Docker Image
