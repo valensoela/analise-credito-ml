@@ -1,3 +1,4 @@
+import os
 import argparse
 import logging
 import joblib
@@ -229,7 +230,9 @@ def main(args):
     features_names = get_feature_names(preprocessor)
 
     # MFLOW SETUP
-    mlflow.set_tracking_uri(cfg["mlflow"]["tracking_uri"])
+    mlflow.set_tracking_uri(
+        os.getenv("MLFLOW_TRACKING_URI", cfg["mlflow"]["tracking_uri"])
+    )
 
     # TREINAMENTO
     models_to_train = (

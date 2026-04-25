@@ -10,18 +10,33 @@ services:
     volumes:
       - mlflow_data:/mlflow
     command: >
-      mlflow server
-      --backend-store-uri sqlite:///mlflow/mlflow.db
-      --default-artifact-root /mlflow/artifacts
-      --host 0.0.0.0
-      --port 5000
-      --allowed-hosts "*"
+      mlflow server --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0 --port 5000 --allowed-hosts "*"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" ]
       interval: 10s
       timeout: 5s
       retries: 8
       start_period: 30s
+
+  train:
+    build: .
+    container_name: loan-train
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    command: python src/train.py --model all
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; exit(0 if os.path.exists('models/best_model.joblib') else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
 
   api:
     build: .
@@ -36,7 +51,7 @@ services:
       mlflow:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
       interval: 10s
       timeout: 5s
       retries: 8
@@ -55,9 +70,7 @@ services:
       api:
         condition: service_healthy
     command: >
-      streamlit run app/streamlit_app.py
-      --server.port 8501
-      --server.address 0.0.0.0
+      streamlit run app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 
 volumes:
   mlflow_data:

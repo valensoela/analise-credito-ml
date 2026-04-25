@@ -209,8 +209,8 @@ __marimo__/
 # ── Projeto: Loan Default Predictor ───────────────────────────────────────
 
 # Modelos treinados — arquivos grandes, não vão para o GitHub
-models/*.joblib
-models/*.pkl
+# models/*.joblib
+# models/*.pkl
 
 # Dados — nunca sobe dados brutos para repositório público
 data/raw/*.csv
